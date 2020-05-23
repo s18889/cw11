@@ -1,9 +1,12 @@
+using cw11.DTO;
 using System;
 
 namespace cw11
 {
     public class WeatherForecast
     {
+
+
         public DateTime Date { get; set; }
 
         public int TemperatureC { get; set; }

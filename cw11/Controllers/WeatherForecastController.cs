@@ -2,38 +2,98 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using cw11.ComunicationModels;
+using cw11.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace cw11.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("clinic")]
     public class WeatherForecastController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
 
-        private readonly ILogger<WeatherForecastController> _logger;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+       
+        IDatabaseComunication _db;
+        public WeatherForecastController(IDatabaseComunication db)
         {
-            _logger = logger;
+            _db = db;
         }
 
-        [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        [HttpPost]
+        public IActionResult Post()  //załadowanie do bazy danych przykładowych danych
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            try
             {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
+                _db.DatabaseExampleData();
+            }catch(Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
+            return Ok();
         }
+
+        [HttpGet("doctors")]
+        public IActionResult GetDoctors()  //wiem literówka. tylko nie wiem czy napisane powinno być lekarza czy lekarzy "która pozwoli nam pobierać dane lekarze"
+        {//zakładam lekarzy bo lekarze to liczba mnoga więc jest blirzej
+            try
+            {
+                var ds = _db.GetDoctors();
+                return Ok(ds);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
+            
+        }
+
+        [HttpPost("doctors")]
+        public IActionResult AddDoctor(AddDoctor dr)  
+        {
+            try
+            {
+                _db.AddDoctor(dr);
+                return Ok(dr);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
+
+        }
+
+        [HttpPatch("doctors")]
+        public IActionResult ModyfyDoctor(ModyfyDoctor dr)
+        {
+            try
+            {
+                _db.ModDoctor(dr);
+                return Ok(dr);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
+
+        }
+
+        [HttpDelete("doctors/{id}")]
+        public IActionResult DeleteDoctor(int id)
+        {
+            try
+            {
+                _db.DeleteDoctor(id);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.ToString());
+            }
+
+        }
+
     }
 }

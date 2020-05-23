@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using cw11.DTO;
 using cw11.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -32,6 +33,7 @@ namespace cw11
             {
                 options.UseSqlServer("Data Source=db-mssql;Initial Catalog=s18889;Integrated Security=True");
             });
+            services.AddScoped<IDatabaseComunication,CodeFirstComunication>();
             services.AddControllers();
         }
 
